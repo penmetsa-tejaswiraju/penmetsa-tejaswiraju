@@ -3,6 +3,7 @@
 - 🌱 I’m currently pursuing my Master's in Mechatronics and Robotics at NYU and I have done my Bachelors in Mechanical Engineering 
 - 📫 You can connect with me via LinkedIn (https://www.linkedin.com/in/tejaswi-raju-penmetsa-a3b48513a/)
 - And don't worry people call me both as Penmetsa and Tejaswi
+- Created on 16th Feb 2022
 
 <!---
 penmetsa-tejaswiraju/penmetsa-tejaswiraju is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
