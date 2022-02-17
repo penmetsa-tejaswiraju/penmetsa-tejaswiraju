@@ -1,0 +1,1 @@
+- This project was made on a BS2 microcontroller and the coding was also done on the same.
