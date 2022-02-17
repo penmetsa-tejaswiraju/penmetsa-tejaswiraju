@@ -1,0 +1,173 @@
+' {$STAMP BS2}
+' {$PBASIC 2.5}
+
+'Final Project: Disinfection Robot
+
+'pin 0 untrasonic sensor
+'pin 1 emergency button
+'pin 5 green LED
+'pin 6 red LED
+'pin 7 LCD/Speaker
+'pin 8 water level sensor
+'pin 9 photo transistor
+'pin 10 speaker
+'pin 12 right wheel
+'pin 13 left wheel
+'pin 14 standard servo
+
+CmConstant      CON     2260
+cmDistance      VAR     Word
+time            VAR     Word
+counter         VAR     Word
+servo           VAR     Byte
+x               VAR     Word
+y               VAR     Word
+i               VAR     Word
+waterdata       VAR     Word
+lcdcounter      VAR     Word
+counter1        VAR     Word
+counter2        VAR     Word
+globalcounter   VAR     Word
+TxPin           CON     7
+Baud19200       CON     32
+btn             PIN     1
+
+
+OUTPUT 13   'left wheel   1000 forward
+OUTPUT 12   'right wheel  500  forward
+OUTPUT 14
+OUTPUT 0
+
+PAUSE 1000
+
+servo=1     'initialize
+lcdcounter=1
+globalcounter=1
+
+  DO                        'phototransistor wait for light
+'    DEBUG HOME, "IN9 = ", BIN IN9
+    IF IN9>0 THEN
+
+        HIGH TxPin          'LCD message
+        PAUSE 100
+        SEROUT TxPin, Baud19200, ["Working!        ", CR]
+
+      GOTO main
+      PAUSE 10
+    ENDIF
+  LOOP
+
+
+main:
+DO
+  HIGH 5                     'LED green  working mode
+
+  GOSUB emergency
+  GOSUB ultrasonic
+  GOSUB forward
+  GOSUB spray
+  GOSUB water
+
+  globalcounter=globalcounter+1   'automatically shut down after 30 senconds
+  IF globalcounter>1000 THEN
+  LOW 5
+  HIGH 6                          'turn on red LED
+  STOP
+  ENDIF
+LOOP
+
+
+ultrasonic:
+PULSOUT 0, 5              'get distance from ultrasonic sensor
+PULSIN 0, 1, time
+cmDistance = cmConstant ** time
+'DEBUG ? cmDistance, " cm"
+
+DO WHILE(cmDistance<=15)  'near wall, rotate
+
+        HIGH TxPin        'LCD message
+        PAUSE 100
+        SEROUT TxPin, Baud19200, ["Turning!        ", CR]
+
+  FOR counter = 1 TO 60
+    PULSOUT 12, 1000
+    PAUSE 20
+  NEXT
+  GOTO ultrasonic
+LOOP
+RETURN
+
+
+water:                       'this is for water sensor
+IF lcdcounter>100 THEN       'reset counter
+  lcdcounter=1
+ENDIF
+
+IF lcdcounter=100 THEN       'water sensor send data every 100 loops
+  HIGH 8
+  PAUSE 3
+  RCTIME 8,1,waterdata
+  DEBUG CR
+  DEBUG ? waterdata
+
+  IF waterdata <10 THEN        'LCD DISPLAY water data every 100 loops
+  HIGH TxPin                  ' Set pin high to be a serial port
+  PAUSE 100                   ' Pause for Serial LCD to initialize
+  SEROUT TxPin, Baud19200, ["Water level is ", DEC waterdata, CR]
+  ENDIF
+
+  IF waterdata >=10 THEN
+    HIGH TxPin
+    PAUSE 100
+    SEROUT TxPin, Baud19200, ["Add water!          ", CR]
+  ENDIF
+
+ENDIF
+lcdcounter=lcdcounter+1
+RETURN
+
+
+forward:
+      PULSOUT 12,500            'go straight
+      PULSOUT 13,1000
+      RETURN
+
+
+spray:
+IF servo=100 THEN               'standard servo actuated every 100 loops
+  servo=1
+ENDIF
+
+IF servo=50 THEN                'standard servo actuated every 100 loops
+      FOR x = 1 TO 45
+      PULSOUT 14,200
+      PAUSE 5
+      NEXT
+
+      FOR y = 1 TO 45
+      PULSOUT 14,1200
+      PAUSE 5
+      NEXT
+ENDIF
+servo=servo+1
+RETURN
+
+
+emergency:                      'need real button, comment this function if there is no button!
+    IF btn=0 THEN
+    HIGH 6                      'LED red on
+    LOW 5
+    HIGH 10                     '0.5 second beep
+    PAUSE 500
+    LOW 10
+    PAUSE 500
+    HIGH 10                     '0.5 second beep
+    PAUSE 500
+    LOW 10
+    PAUSE 500
+    HIGH 10                     '0.5 second beep
+    PAUSE 500
+    LOW 10
+    STOP                        'stop the robot
+    ENDIF
+RETURN
