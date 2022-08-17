@@ -1,0 +1,20 @@
+Propeller Term Project final Code.c
+-I ./library/libping
+-I ./library/libservo
+-I ./library/libsimplei2c
+-I ./library/libsimpletext
+-I ./library/libsimpletools
+-L ./library/libping
+-L ./library/libservo
+-L ./library/libsimplei2c
+-L ./library/libsimpletext
+-L ./library/libsimpletools
+>-fno-exceptions
+>-lm
+>-m32bit-doubles
+>BOARD::ACTIVITYBOARD
+>compiler=C
+>defs::-std=c99
+>linker::-lping -lservo -lsimplei2c -lsimpletext -lsimpletools>linker::-lping -lservo -lsimplei2c -lsimpletext -lsimpletools
+>memtype=cmm main ram compact
+>optimize=-Os
