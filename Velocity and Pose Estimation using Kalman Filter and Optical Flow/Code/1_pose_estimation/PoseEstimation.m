@@ -4,7 +4,7 @@ clear all;
 close all;
 clc;
 addpath('../data') 
-%Change the number to work on both Dataset 1 and Dataset 4 (Do not use Dataset 9)
+
 
 datasetNum = 1;
 [data, vicon, time] = init(datasetNum);
